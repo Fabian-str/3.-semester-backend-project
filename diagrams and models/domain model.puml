@@ -1,0 +1,73 @@
+@startuml
+
+class User {
+  id : Long
+  username : String
+  passwordHash : String
+  role : String
+}
+
+class Playthrough {
+  id : Long
+  name : String
+  game : PokemonGame
+  createdAt : LocalDateTime
+}
+
+class PokemonInstance {
+  id : Long
+  pokemonId : int
+  nickname : String
+  gender : Gender
+  shiny : boolean
+  currentlyOwned : boolean
+  obtainedAt : LocalDateTime
+}
+
+class CollectionGoal {
+  id : Long
+  pokemonId : int
+  targetMale : int
+  targetFemale : int
+  targetMaleShiny : int
+  targetFemaleShiny : int
+}
+
+class Location {
+  id : Long
+  game : PokemonGame
+  name : String
+}
+
+class Encounter {
+  id : Long
+  pokemonId : int
+  method : String
+  requirementText : String
+}
+
+enum PokemonGame {
+  RED
+  BLUE
+  GOLD
+  SILVER
+  CRYSTAL
+  RUBY
+  SAPPHIRE
+  EMERALD
+  FIRE_RED
+  LEAF_GREEN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  GENDERLESS
+}
+
+User "1" --> "*" Playthrough
+Playthrough "1" --> "*" PokemonInstance
+Playthrough "1" --> "*" CollectionGoal
+Location "1" --> "*" Encounter
+
+@enduml

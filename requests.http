@@ -1,0 +1,183 @@
+@emulatorCode =
+@baseUrl = http://localhost:7071
+@token =
+@playthroughId = 12
+
+
+### Register user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "dockertest",
+  "password": "password123"
+}
+
+
+### Login user
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+
+### Login admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testadmin",
+  "password": "admin123"
+}
+
+
+### Get my playthroughs
+GET {{baseUrl}}/api/playthroughs
+Authorization: Bearer {{token}}
+
+
+### Get one playthrough
+GET {{baseUrl}}/api/playthroughs/{{playthroughId}}
+Authorization: Bearer {{token}}
+
+
+### Create playthrough
+POST {{baseUrl}}/api/playthroughs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "My Pokémon Blue Run",
+  "game": "BLUE"
+}
+
+
+### Update playthrough
+PUT {{baseUrl}}/api/playthroughs/{{playthroughId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Pokémon Blue Run",
+  "game": "BLUE"
+}
+
+
+### Delete playthrough and its Pokémon
+DELETE {{baseUrl}}/api/playthroughs/{{playthroughId}}
+Authorization: Bearer {{token}}
+
+
+### Get all my Pokémon
+GET {{baseUrl}}/api/pokemon-instances
+Authorization: Bearer {{token}}
+
+
+### Get Pokémon in playthrough
+GET {{baseUrl}}/api/playthroughs/{{playthroughId}}/pokemon
+Authorization: Bearer {{token}}
+
+
+### Add Pikachu to playthrough
+POST {{baseUrl}}/api/playthroughs/{{playthroughId}}/pokemon
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "pokemonId": 25,
+  "nickname": "Sparky",
+  "gender": "MALE",
+  "shiny": false,
+  "currentlyOwned": true
+}
+
+
+### Add Bulbasaur to playthrough
+POST {{baseUrl}}/api/playthroughs/{{playthroughId}}/pokemon
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "pokemonId": 1,
+  "nickname": "Zorro",
+  "gender": "MALE",
+  "shiny": false,
+  "currentlyOwned": true
+}
+
+
+### Get Pokémon metadata and sprite variants
+GET {{baseUrl}}/api/pokemon/25
+
+
+### Send emulator test state
+POST {{baseUrl}}/api/game-state/test
+
+
+### Send emulator state
+POST {{baseUrl}}/api/game-state
+Content-Type: application/json
+
+{
+  "mapId": 12,
+  "partyCount": 1,
+  "speciesIds": [176]
+}
+
+### Create emulator connection
+POST {{baseUrl}}/api/playthroughs/{{playthroughId}}/emulator-connection
+Authorization: Bearer {{token}}
+
+### Send emulator state
+POST {{baseUrl}}/api/game-state
+X-Emulator-Code: {{emulatorCode}}
+Content-Type: application/json
+
+{
+  "mapId": 12,
+  "partyCount": 1,
+  "speciesIds": [176]
+}
+
+### Get live emulator state
+GET {{baseUrl}}/api/playthroughs/{{playthroughId}}/game-state
+Authorization: Bearer {{token}}
+
+### Test multiple Gen 1 species
+POST {{baseUrl}}/api/game-state
+X-Emulator-Code: {{emulatorCode}}
+Content-Type: application/json
+
+{
+  "mapId": 0,
+  "partyCount": 3,
+  "speciesIds": [176, 36, 165]
+}
+
+### Test player name
+POST {{baseUrl}}/api/game-state
+X-Emulator-Code: {{emulatorCode}}
+Content-Type: application/json
+
+{
+  "mapId": 38,
+  "partyCount": 1,
+  "speciesIds": [176],
+  "playerName": "LEON"
+}
+
+### Test Mt. Moon mapping
+POST {{baseUrl}}/api/game-state
+X-Emulator-Code: {{emulatorCode}}
+Content-Type: application/json
+
+{
+  "mapId": 60,
+  "partyCount": 1,
+  "speciesIds": [176],
+  "playerName": "ASH",
+  "rivalName": "GARY"
+}

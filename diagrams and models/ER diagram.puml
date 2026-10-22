@@ -1,0 +1,83 @@
+@startuml
+
+entity users {
+  * id : bigint <<PK>>
+  --
+  username : varchar
+  password_hash : varchar
+  role : varchar
+}
+
+entity playthroughs {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  name : varchar
+  game : varchar
+  created_at : timestamp
+  tracking_mode : varchar
+}
+
+entity pokemon_instances {
+  * id : bigint <<PK>>
+  --
+  playthrough_id : bigint <<FK>>
+  pokemon_id : int
+  nickname : varchar
+  gender : varchar
+  shiny : boolean
+  currently_owned : boolean
+  obtained_at : timestamp
+  obtained_method : varchar
+}
+
+entity collection_goals {
+  * id : bigint <<PK>>
+  --
+  playthrough_id : bigint <<FK>>
+  pokemon_id : int
+  target_male : int
+  target_female : int
+  target_male_shiny : int
+  target_female_shiny : int
+}
+
+entity pokemon_history {
+  * id : bigint <<PK>>
+  --
+  pokemon_instance_id : bigint <<FK>>
+  location_id : bigint <<FK>>
+  event_type : varchar
+  occurred_at : timestamp
+}
+
+entity locations {
+  * id : bigint <<PK>>
+  --
+  game : varchar
+  name : varchar
+  description : text
+}
+
+entity encounters {
+  * id : bigint <<PK>>
+  --
+  location_id : bigint <<FK>>
+  pokemon_id : int
+  method : varchar
+  min_level : int
+  max_level : int
+  encounter_rate : decimal
+  requirement : text
+}
+
+users ||--o{ playthroughs
+playthroughs ||--o{ pokemon_instances
+playthroughs ||--o{ collection_goals
+
+pokemon_instances ||--o{ pokemon_history
+
+locations ||--o{ encounters
+locations ||--o{ pokemon_history
+
+@enduml

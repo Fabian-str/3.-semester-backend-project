@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéJourney Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<main class="dashboard-container">
+
+    <header>
+        <h1>PokéJourney</h1>
+        <p>Logged in as <span id="username"></span></p>
+        <button id="logout-button" type="button">Logout</button>
+    </header>
+
+    <nav class="dashboard-nav">
+        <a href="/pokedex.html">Pokédex</a>
+
+        <a href="/scripts/pokejourney_tracker.lua"
+           download="pokejourney_tracker.lua">
+            Download mGBA script
+        </a>
+    </nav>
+
+    <section>
+        <h2>Create Playthrough</h2>
+
+        <form id="create-playthrough-form">
+            <label for="playthrough-name">Name</label>
+
+            <input id="playthrough-name"
+                   type="text"
+                   required>
+
+            <label for="playthrough-game">Game</label>
+
+            <select id="playthrough-game" required>
+                <option value="">Select game</option>
+                <option value="RED">Pokémon Red</option>
+                <option value="BLUE">Pokémon Blue</option>
+            </select>
+
+            <button type="submit">Create Playthrough</button>
+        </form>
+
+        <p id="create-error"></p>
+    </section>
+
+    <section>
+        <h2>My Playthroughs</h2>
+        <div id="playthrough-list">Loading...</div>
+    </section>
+
+    <section>
+        <h2>My Pokémon</h2>
+
+        <div class="pokemon-controls">
+            <label>
+                Sort by
+                <select id="pokemon-sort">
+                    <option value="national">National Pokédex</option>
+                    <option value="name">Name</option>
+                </select>
+            </label>
+
+            <label>
+                Generation
+                <select id="generation-filter">
+                    <option value="all">All</option>
+                    <option value="1">Generation I</option>
+                    <option value="2">Generation II</option>
+                    <option value="3">Generation III</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="pokemon-collection">
+            <div id="pokemon-grid" class="pokemon-grid">
+                Loading...
+            </div>
+
+            <aside id="pokemon-details" class="pokemon-details">
+                <p>Select a Pokémon.</p>
+            </aside>
+        </div>
+    </section>
+
+</main>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

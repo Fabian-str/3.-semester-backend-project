@@ -1,0 +1,7 @@
+package app.entities;
+
+public enum Gender {
+    MALE,
+    FEMALE,
+    GENDERLESS
+}

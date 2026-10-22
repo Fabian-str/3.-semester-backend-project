@@ -1,0 +1,42 @@
+services:
+
+  db:
+    image: postgres:16.2
+    container_name: pokejourney-db
+
+    environment:
+      POSTGRES_DB: pokejourney
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - pokejourney-db-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pokejourney"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: pokejourney-backend
+
+    ports:
+      - "7071:7071"
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: pokejourney
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SEED_DEMO_DATA: "true"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pokejourney-db-data:

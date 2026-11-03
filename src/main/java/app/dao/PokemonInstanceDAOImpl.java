@@ -4,6 +4,7 @@ import app.entities.Gender;
 import app.entities.PokemonInstance;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import app.entities.Playthrough;
 
 import java.util.List;
 
@@ -150,12 +151,7 @@ public class PokemonInstanceDAOImpl implements PokemonInstanceDAO {
     }
 
     @Override
-    public long countBySpeciesGenderAndShiny(
-            Long playthroughId,
-            int pokemonId,
-            Gender gender,
-            boolean shiny
-    ) {
+    public long countBySpeciesGenderAndShiny(Long playthroughId, int pokemonId, Gender gender, boolean shiny) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery(
                             """
@@ -197,10 +193,7 @@ public class PokemonInstanceDAOImpl implements PokemonInstanceDAO {
     }
 
     @Override
-    public List<PokemonInstance> findByPlaythroughIdAndUserId(
-            Long playthroughId,
-            Long userId
-    ) {
+    public List<PokemonInstance> findByPlaythroughIdAndUserId(Long playthroughId, Long userId) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery(
                             """
@@ -232,6 +225,119 @@ public class PokemonInstanceDAOImpl implements PokemonInstanceDAO {
                     )
                     .setParameter("userId", userId)
                     .getResultList();
+        }
+    }
+
+    @Override
+    public void importParty(
+            Long playthroughId,
+            Long userId,
+            List<PokemonInstance> party
+    ) {
+        try (EntityManager em = emf.createEntityManager()) {
+            var transaction = em.getTransaction();
+
+            try {
+                transaction.begin();
+
+                Playthrough playthrough = em.find(
+                        Playthrough.class,
+                        playthroughId,
+                        jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
+                );
+
+                if (playthrough == null ||
+                        !java.util.Objects.equals(
+                                playthrough.getUser().getId(), userId)) {
+                    throw new IllegalArgumentException("Playthrough not found");
+                }
+
+                importParty(em, playthrough, party);
+
+                transaction.commit();
+
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+
+                throw e;
+            }
+        }
+    }
+
+    static void importParty(
+            EntityManager em,
+            Playthrough playthrough,
+            List<PokemonInstance> party
+    ) {
+        if (party == null) {
+            throw new IllegalArgumentException("Pokémon collection is missing");
+        }
+
+        var identities = new java.util.HashSet<String>();
+
+        for (PokemonInstance incoming : party) {
+            if (incoming == null ||
+                    incoming.getEmulatorIdentity() == null ||
+                    !identities.add(incoming.getEmulatorIdentity())) {
+                throw new IllegalArgumentException(
+                        "Missing or duplicate emulator identity in collection."
+                );
+            }
+        }
+
+        List<PokemonInstance> existing = em.createQuery(
+                        """
+                        SELECT p
+                        FROM PokemonInstance p
+                        WHERE p.playthrough.id = :playthroughId
+                        AND p.emulatorIdentity IS NOT NULL
+                        """,
+                        PokemonInstance.class
+                )
+                .setParameter("playthroughId", playthrough.getId())
+                .getResultList();
+
+        var byIdentity = new java.util.HashMap<String, PokemonInstance>();
+
+        for (PokemonInstance pokemon : existing) {
+            if (byIdentity.putIfAbsent(
+                    pokemon.getEmulatorIdentity(), pokemon) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate emulator identities exist in the saved collection."
+                );
+            }
+        }
+
+        for (PokemonInstance saved : existing) {
+            saved.setCurrentlyOwned(false);
+        }
+
+        for (PokemonInstance incoming : party) {
+            PokemonInstance saved = byIdentity.get(
+                    incoming.getEmulatorIdentity()
+            );
+
+            if (saved == null) {
+                incoming.setPlaythrough(playthrough);
+                incoming.setCurrentlyOwned(true);
+                em.persist(incoming);
+
+                byIdentity.put(incoming.getEmulatorIdentity(), incoming);
+
+            } else {
+                saved.setPokemonId(incoming.getPokemonId());
+                saved.setNickname(incoming.getNickname());
+
+                if (incoming.getLevel() != null) {
+                    saved.setLevel(incoming.getLevel());
+                }
+
+                saved.setOriginalTrainerId(incoming.getOriginalTrainerId());
+                saved.setDvs(incoming.getDvs());
+                saved.setCurrentlyOwned(true);
+            }
         }
     }
 }

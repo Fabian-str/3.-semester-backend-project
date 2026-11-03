@@ -7,6 +7,11 @@ import app.entities.PokemonGame;
 import app.entities.PokemonInstance;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
+import app.entities.User;
+import app.entities.Role;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,22 +23,41 @@ class PokemonInstanceDAOImplTest {
     private PokemonInstanceDAO pokemonDAO;
     private Playthrough playthrough;
 
+    private User testUser;
+
     @BeforeAll
     static void setupAll() {
-
-        emf = HibernateConfig.getEntityManagerFactory();
+        emf = HibernateConfig.createTestEntityManagerFactory();
     }
 
     @BeforeEach
     void setup() {
-
         playthroughDAO = new PlaythroughDAOImpl(emf);
         pokemonDAO = new PokemonInstanceDAOImpl(emf);
 
-        playthrough = Playthrough.builder()
-            .name("Test Red Run")
-            .game(PokemonGame.RED)
+        testUser = User.builder().username("dao_" + UUID.randomUUID())
+            .passwordHash(BCrypt.hashpw("test123", BCrypt.gensalt())).role(Role.USER)
             .build();
+
+        try (var em = emf.createEntityManager()) {
+            var transaction = em.getTransaction();
+
+            try {
+                transaction.begin();
+                em.persist(testUser);
+                transaction.commit();
+
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+
+                throw e;
+            }
+        }
+
+        playthrough = Playthrough.builder().name("Test Red Run").game(PokemonGame.RED)
+            .user(testUser).build();
 
         playthroughDAO.create(playthrough);
     }
@@ -62,6 +86,38 @@ class PokemonInstanceDAOImplTest {
         assertEquals(Gender.MALE, found.getGender());
     }
 
+    @AfterEach
+    void cleanup() {
+        if (playthrough != null && playthrough.getId() != null) {
+            playthroughDAO.delete(playthrough.getId());
+        }
+
+        if (testUser != null && testUser.getId() != null) {
+            try (var em = emf.createEntityManager()) {
+                var transaction = em.getTransaction();
+
+                try {
+                    transaction.begin();
+
+                    User saved = em.find(User.class, testUser.getId());
+
+                    if (saved != null) {
+                        em.remove(saved);
+                    }
+
+                    transaction.commit();
+
+                } catch (RuntimeException e) {
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+
+                    throw e;
+                }
+            }
+        }
+    }
+
     @Test
     void updatePokemon() {
         PokemonInstance pikachu = PokemonInstance.builder()
@@ -81,6 +137,7 @@ class PokemonInstanceDAOImplTest {
 
         assertEquals("Sparky", updated.getNickname());
     }
+
 
     @Test
     void deletePokemon() {

@@ -4,6 +4,9 @@ services:
     image: postgres:16.2
     container_name: pokejourney-db
 
+    ports:
+      - "127.0.0.1:5433:5432"
+
     environment:
       POSTGRES_DB: pokejourney
       POSTGRES_USER: postgres
@@ -40,3 +43,5 @@ services:
 
 volumes:
   pokejourney-db-data:
+    external: true
+    name: backend_pokejourney-db-data

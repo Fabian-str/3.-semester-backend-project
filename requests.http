@@ -9,7 +9,16 @@ POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "dockertest",
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Register testadmin
+POST http://localhost:7071/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testadmin",
   "password": "password123"
 }
 
@@ -30,7 +39,7 @@ Content-Type: application/json
 
 {
   "username": "testadmin",
-  "password": "admin123"
+  "password": "password123"
 }
 
 
@@ -180,4 +189,13 @@ Content-Type: application/json
   "speciesIds": [176],
   "playerName": "ASH",
   "rivalName": "GARY"
+}
+
+### Login demo user
+POST http://localhost:7071/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
 }

@@ -8,6 +8,7 @@ import app.security.RoleHandler;
 import app.services.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManagerFactory;
+import app.services.PartyImportService;
 
 public class AppDependencies {
 
@@ -61,7 +62,9 @@ public class AppDependencies {
 
         authController = new AuthController(authService, jwtService);
 
-        gameStateController = new GameStateController(genOneAdapter, emulatorConnectionService, playthroughDAO);
+        PartyImportService partyImportService = new PartyImportService(pokemonInstanceDAO, genOneAdapter);
+
+        gameStateController = new GameStateController(genOneAdapter, emulatorConnectionService, playthroughDAO, partyImportService);
 
         authHandler = new AuthHandler(jwtService);
 

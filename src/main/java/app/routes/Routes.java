@@ -66,6 +66,10 @@ public class Routes {
 
         app.get("/api/playthroughs/{id}/game-state", dependencies.gameStateController::getGameState);
 
+        app.get("/api/playthroughs/{id}/encounters", ctx -> {dependencies.authHandler.handle(ctx);dependencies.gameStateController.getEncounters(ctx);});
+
+        app.get("/api/pokemon/{id}/details", dependencies.pokemonController::getPokemonDetails);
+
         // WebSocket
         app.ws("/ws", ws -> {
 

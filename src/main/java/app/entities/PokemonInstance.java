@@ -45,4 +45,13 @@ public class PokemonInstance {
             obtainedAt = LocalDateTime.now();
         }
     }
+
+    private Integer level;
+
+    private Integer originalTrainerId;
+
+    private Integer dvs;
+
+    @Column(length = 40)
+    private String emulatorIdentity;
 }

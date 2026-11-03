@@ -32,4 +32,6 @@ public interface PokemonInstanceDAO {
     long countBySpeciesAndGender(Long playthroughId, int pokemonId, Gender gender);
 
     long countBySpeciesGenderAndShiny(Long playthroughId, int pokemonId, Gender gender, boolean shiny);
+
+    void importParty(Long playthroughId, Long userId, List<PokemonInstance> party);
 }

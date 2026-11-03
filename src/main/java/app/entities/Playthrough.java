@@ -41,4 +41,21 @@ public class Playthrough {
             createdAt = LocalDateTime.now();
         }
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "emulator_game")
+    private PokemonGame emulatorGame;
+
+    @Column(name = "emulator_trainer_id")
+    private Integer emulatorTrainerId;
+
+    @Column(name = "emulator_player_name", length = 7)
+    private String emulatorPlayerName;
+
+    @JsonIgnore
+    @Column(name = "last_emulator_state", columnDefinition = "text")
+    private String lastEmulatorState;
+
+    @Column(name = "last_emulator_received_at")
+    private String lastEmulatorReceivedAt;
 }

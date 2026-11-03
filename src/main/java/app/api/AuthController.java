@@ -69,9 +69,7 @@ public class AuthController {
         }
 
         try {
-            User user = authService.login(
-                request.getUsername(),
-                request.getPassword());
+            User user = authService.login(request.getUsername(), request.getPassword());
 
             String token = jwtService.generateToken(user);
 

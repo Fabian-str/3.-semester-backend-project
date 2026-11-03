@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>PokéJourney</title>
-
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -15,16 +13,15 @@
 
     <h1>PokéJourney</h1>
 
-    <section class="login-box">
-
+    <section id="login-section" class="login-box">
         <h2>Login</h2>
 
         <form id="login-form">
-
             <label for="username">Username</label>
             <input
                     id="username"
                     type="text"
+                    autocomplete="username"
                     required
             >
 
@@ -32,22 +29,63 @@
             <input
                     id="password"
                     type="password"
+                    autocomplete="current-password"
                     required
             >
 
-            <button type="submit">
-                Login
-            </button>
-
+            <button type="submit">Login</button>
         </form>
 
-        <p id="login-error"></p>
+        <p id="login-error" role="alert"></p>
+        <p id="login-message" role="status"></p>
 
+        <button id="show-register" type="button">
+            Create an account
+        </button>
+    </section>
+
+    <section id="register-section" class="login-box" hidden>
+        <h2>Create account</h2>
+
+        <form id="register-form">
+            <label for="register-username">Username</label>
+            <input
+                    id="register-username"
+                    type="text"
+                    autocomplete="username"
+                    required
+            >
+
+            <label for="register-password">Password</label>
+            <input
+                    id="register-password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+            >
+
+            <label for="confirm-password">Confirm password</label>
+            <input
+                    id="confirm-password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+            >
+
+            <button type="submit">Create account</button>
+        </form>
+
+        <p id="register-error" role="alert"></p>
+
+        <button id="show-login" type="button">
+            Back to login
+        </button>
     </section>
 
 </main>
 
 <script src="app.js"></script>
+<script src="register.js"></script>
 
 </body>
 </html>

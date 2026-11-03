@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>PokéJourney Pokédex</title>
+
   <link rel="stylesheet" href="styles.css">
+
+  <script src="pokemon-details.js" defer></script>
+  <script src="pokedex.js" defer></script>
 </head>
 
-<body>
+<body class="pokedex-page">
 
 <main class="dashboard-container">
 
@@ -17,8 +22,66 @@
   </header>
 
   <section>
-    <h2>National Pokédex</h2>
-    <p>Pokémon will appear here.</p>
+    <h2>Kanto Pokémon</h2>
+
+    <div class="pokemon-controls">
+      <label>
+        Playthrough
+        <select id="pokedex-playthrough">
+          <option value="general">General Pokédex</option>
+        </select>
+      </label>
+
+      <label>
+        View
+        <select id="pokedex-view">
+          <option value="species">Species</option>
+          <option value="owned">My Pokémon</option>
+        </select>
+      </label>
+
+      <label>
+        Show
+        <select id="pokedex-filter">
+          <option value="all">All species</option>
+          <option value="caught">Caught</option>
+          <option value="seen">Seen, not caught</option>
+        </select>
+      </label>
+    </div>
+
+    <p id="pokedex-context" role="status"></p>
+
+    <form id="pokedex-search-form">
+      <label for="pokedex-search">
+        Search by number, nickname, or a species name
+        from an already loaded page
+      </label>
+
+      <input id="pokedex-search"
+             type="search"
+             placeholder="25 or Pikachu">
+
+      <button type="submit">Search</button>
+    </form>
+
+    <p id="pokedex-status" role="status"></p>
+
+    <div class="pokemon-collection">
+      <div id="pokedex-grid" class="pokemon-grid"></div>
+
+      <aside id="pokemon-details"
+             class="pokemon-details"
+             aria-label="Selected Pokémon details">
+        <p>Select a Pokémon.</p>
+      </aside>
+    </div>
+
+    <div class="pokedex-pagination">
+      <button id="previous-page" type="button">Previous</button>
+      <span id="page-number"></span>
+      <button id="next-page" type="button">Next</button>
+    </div>
   </section>
 
 </main>

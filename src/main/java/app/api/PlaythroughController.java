@@ -62,11 +62,9 @@ public class PlaythroughController {
 
     public void create(Context ctx) {
 
-        CreatePlaythroughDTO request =
-                ctx.bodyAsClass(CreatePlaythroughDTO.class);
+        CreatePlaythroughDTO request = ctx.bodyAsClass(CreatePlaythroughDTO.class);
 
-        if (request.getName() == null ||
-                request.getName().isBlank()) {
+        if (request.getName() == null || request.getName().isBlank()) {
 
             ctx.status(400);
             ctx.json(Map.of("error", "Playthrough name is required"));
@@ -81,8 +79,7 @@ public class PlaythroughController {
 
         Long userId = getUserId(ctx);
 
-        User user = userDAO.findById(userId)
-                .orElse(null);
+        User user = userDAO.findById(userId).orElse(null);
 
         if (user == null) {
             ctx.status(401);

@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class HibernateConfig {
 
     private static EntityManagerFactory emf;
@@ -27,13 +32,23 @@ public class HibernateConfig {
     }
 
     private static EntityManagerFactory buildEntityManagerFactory() {
+        return buildEntityManagerFactory(null);
+    }
+
+      public static EntityManagerFactory createTestEntityManagerFactory() {
+        return buildEntityManagerFactory("pokejourney_test");
+     }
+
+     private static EntityManagerFactory buildEntityManagerFactory(
+            String databaseOverride
+     ) {
         Properties properties = loadProperties();
 
         String dbHost = getConfigValue(properties, "DB_HOST", "localhost");
 
         String dbPort = getConfigValue(properties, "DB_PORT", "5432");
 
-        String dbName = getConfigValue(properties, "DB_NAME", null);
+         String dbName = databaseOverride != null ? databaseOverride : getConfigValue(properties, "DB_NAME", null);
 
         String dbUsername = getConfigValue(properties, "DB_USERNAME", null);
 
@@ -43,6 +58,8 @@ public class HibernateConfig {
 
             throw new RuntimeException("Database configuration is missing");
         }
+
+        createDatabaseIfMissing(dbHost, dbPort, dbName, dbUsername, dbPassword);
 
         String jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
 
@@ -103,5 +120,48 @@ public class HibernateConfig {
         }
 
         return properties;
+    }
+
+    private static void createDatabaseIfMissing(
+            String dbHost,
+            String dbPort,
+            String dbName,
+            String dbUsername,
+            String dbPassword
+    ) {
+        if (!dbName.matches("[A-Za-z_][A-Za-z0-9_]{0,62}")) {
+            throw new IllegalArgumentException("Invalid database name: " + dbName);
+        }
+
+        String jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword)) {
+
+            return;
+
+        } catch (SQLException e) {
+            if (!"3D000".equals(e.getSQLState())) {
+                throw new RuntimeException("Could not connect to database", e);
+            }
+        }
+
+        String adminUrl =
+                "jdbc:postgresql://" + dbHost + ":" + dbPort + "/postgres";
+
+        try (
+                Connection connection = DriverManager.getConnection(adminUrl, dbUsername, dbPassword);
+                Statement statement = connection.createStatement()
+        ) {
+            connection.setAutoCommit(true);
+
+            statement.executeUpdate("CREATE DATABASE \"" + dbName + "\"");
+
+            System.out.println("Created database: " + dbName);
+
+        } catch (SQLException e) {
+            if (!"42P04".equals(e.getSQLState())) {
+                throw new RuntimeException("Could not create database: " + dbName, e);
+            }
+        }
     }
 }

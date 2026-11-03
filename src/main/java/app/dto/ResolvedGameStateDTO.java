@@ -2,10 +2,14 @@ package app.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class ResolvedGameStateDTO {
 
@@ -18,4 +22,5 @@ public class ResolvedGameStateDTO {
     private LocationDTO location;
     private List<Integer> seenPokemonIds;
     private List<Integer> caughtPokemonIds;
+    private Integer badgeMask;
 }

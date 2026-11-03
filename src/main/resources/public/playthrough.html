@@ -7,159 +7,84 @@
   <link rel="stylesheet" href="styles.css">
   <script src="playthrough.js" defer></script>
 </head>
-
-<body class="playthrough-page">
-
+<body class="playthrough-page pt-redesign">
 <main class="pt-container">
-
   <nav class="dashboard-nav">
     <a href="/dashboard.html">← Dashboard</a>
-
-    <a href="/scripts/pokejourney_tracker.lua"
-       download="pokejourney_tracker.lua">
-      Download mGBA script
-    </a>
+    <a href="/scripts/pokejourney_tracker.lua" download="pokejourney_tracker.lua">Download mGBA script</a>
+    <a id="open-pokedex" href="/pokedex.html">Open Pokédex</a>
   </nav>
-
   <header class="pt-header">
     <div>
       <h1 id="playthrough-name">Loading...</h1>
       <p id="playthrough-game"></p>
     </div>
-
-    <span id="emulator-status"
-          class="pt-status"
-          data-status="waiting"
-          role="status">
-            Waiting for emulator
-        </span>
-  </header>
-
-  <p id="page-error" role="alert" hidden></p>
-
-  <section class="pt-panel">
-    <div class="pt-section-header">
-      <h2>Emulator connection</h2>
-
-      <button id="connect-emulator-button"
-              type="button"
-              disabled>
-        Create connection command
-      </button>
+    <div class="pt-connection-controls">
+      <span id="emulator-status" class="pt-status" data-status="waiting" role="status">Waiting for emulator</span>
+      <button id="connect-emulator-button" type="button" disabled>Connect emulator</button>
     </div>
-
-    <p>
-      Load the tracker script in mGBA,
-      then run the connection command.
-    </p>
-
+  </header>
+  <p id="page-error" role="alert" hidden></p>
+  <details id="connection-panel" class="pt-compact-connection">
+    <summary>Connection instructions</summary>
+    <p>Load the tracker script in mGBA, click Connect emulator, then run the command below.</p>
     <p id="connection-message" role="status"></p>
-
     <div id="emulator-connection-info" hidden>
       <div class="pt-command-row">
         <code id="emulator-connection-code"></code>
-
-        <button id="copy-emulator-command" type="button">
-          Copy command
-        </button>
+        <button id="copy-emulator-command" type="button">Copy command</button>
       </div>
-
-      <p class="pt-muted">
-        Paste the command into the mGBA scripting window
-        and click Run.
-      </p>
+      <p class="pt-muted">Paste into the mGBA scripting window and click Run.</p>
     </div>
-  </section>
-
-  <section class="pt-panel">
-    <h2>Current Area</h2>
-
-    <p id="current-area" class="pt-area">
-      Waiting for emulator data.
-    </p>
-
-    <p id="trainer-info" class="pt-muted"></p>
-
-    <p id="emulator-last-update" class="pt-muted">
-      No data received yet.
-    </p>
-  </section>
-
-  <section class="pt-panel">
-    <div class="pt-section-header">
-      <h2>
-        Live Party
-        <span id="party-count" class="pt-muted"></span>
-      </h2>
-
-      <span class="pt-muted">From the emulator</span>
-    </div>
-
-    <p id="live-data-notice" class="pt-muted">
-      Connect mGBA to see your current party.
-    </p>
-
-    <div id="live-party" class="pt-pokemon-grid"></div>
-  </section>
-
-  <section class="pt-panel">
-    <div class="pt-section-header">
-      <h2>Pokémon in this Playthrough</h2>
-
-      <button id="refresh-pokemon-button"
-              type="button"
-              disabled>
-        Refresh collection
-      </button>
-    </div>
-
-    <p class="pt-muted">
-      Saved collection, separate from the live party.
-    </p>
-
-    <div class="pt-stats">
-      <div>
-        <strong id="recorded-count">—</strong>
-        <span>Recorded Pokémon</span>
-      </div>
-
-      <div>
-        <strong id="owned-count">—</strong>
-        <span>Currently owned</span>
-      </div>
-
-      <div>
-        <strong id="species-count">—</strong>
-        <span>Species recorded</span>
-      </div>
-    </div>
-
-    <p id="collection-status" class="pt-muted" role="status">
-      Loading collection...
-    </p>
-
-    <div id="pokemon-list" class="pt-pokemon-grid"></div>
-  </section>
-
-  <details class="pt-panel">
-    <summary>Encounters and cheats</summary>
-
-    <h2>Available Pokémon</h2>
-    <p>Encounter information has not been connected yet.</p>
-
-    <h2>Cheats</h2>
-
-    <label>
-      <input id="random-encounters-toggle"
-             type="checkbox"
-             disabled>
-      Random encounters
-    </label>
-
-    <p>Emulator cheat controls have not been connected yet.</p>
   </details>
 
-</main>
+  <section class="pt-panel pt-area-panel" aria-labelledby="area-heading">
+    <div class="pt-section-header">
+      <h2 id="area-heading">Current Area: <span id="current-area">Waiting for emulator data.</span></h2>
+      <label class="pt-encounter-toggle" title="Emulator controls are not connected yet">
+        <input id="random-encounters-toggle" type="checkbox" disabled>
+        Disable random encounters <span class="pt-muted">(not connected yet)</span>
+      </label>
+    </div>
+    <div class="pt-area-encounters">
+      <h3>Pokémon available here</h3>
+      <p id="area-encounters-status" class="pt-muted">Area encounter data is not connected yet.</p>
+      <div id="area-encounters" class="pt-pokemon-grid"></div>
+    </div>
+  </section>
 
+  <section class="pt-panel" aria-labelledby="party-heading">
+    <div class="pt-section-header">
+      <h2 id="party-heading">Party <span id="party-count" class="pt-muted">(0/6)</span></h2>
+      <span class="pt-muted">From the emulator</span>
+    </div>
+    <p id="live-data-notice" class="pt-muted">Connect mGBA to see your current party.</p>
+    <div id="live-party" class="pt-party-grid"></div>
+  </section>
+
+  <section class="pt-panel" aria-labelledby="progress-heading">
+    <h2 id="progress-heading">Journey Progress</h2>
+    <div class="pt-progress-grid">
+      <div class="pt-progress-stat"><strong id="seen-count">—</strong><span>Species seen / 151</span></div>
+      <div class="pt-progress-stat"><strong id="caught-count">—</strong><span>Species caught / 151</span></div>
+      <div class="pt-progress-stat"><strong id="badge-count">—</strong><span>Badges / 8</span></div>
+    </div>
+    <p id="pokedex-notice" class="pt-muted"></p>
+    <h3>Gym Badges</h3>
+    <div class="pt-badge-grid" aria-label="Badge status not available yet">
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Boulder</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Cascade</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Thunder</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Rainbow</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Soul</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Marsh</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Volcano</strong></div>
+      <div class="pt-badge" title="Badge status not connected yet"><strong>Earth</strong></div>
+    </div>
+      <p id="badge-notice" class="pt-muted">
+        Waiting for badge data.
+      </p>
+  </section>
+</main>
 </body>
 </html>

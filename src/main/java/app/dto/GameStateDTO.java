@@ -20,4 +20,10 @@ public class GameStateDTO {
     private String rivalName;
     private List<Integer> seenPokemonIds;
     private List<Integer> caughtPokemonIds;
+    private Integer badgeMask;
+    private String gameVersion;
+    private Integer trainerId;
+    private List<PartyPokemonDTO> party;
+    private List<PartyPokemonDTO> pcPokemon;
+    private List<PartyPokemonDTO> dayCarePokemon;
 }
